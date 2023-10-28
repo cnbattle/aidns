@@ -2,7 +2,7 @@
 
 [简体中文](./README_ZH.md)
 
-A lightweight DNS server based on [CoreDNS](https://github.com/coredns/coredns)
+A lightweight DNS server that provides HTTP management interface, based on [CoreDNS](https://github.com/coredns/coredns)
 
 ## For learning and research purposes only
 

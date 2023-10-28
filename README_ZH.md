@@ -2,7 +2,7 @@
 
 [English](./README.md)
 
-一个轻量的DNS服务器，基于 [CoreDNS](https://github.com/coredns/coredns)
+一个轻量级的DNS服务器，提供HTTP管理接口，基于 [CoreDNS](https://github.com/coredns/coredns)
 
 ## 仅供学习研究
 
