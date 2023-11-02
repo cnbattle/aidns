@@ -8,8 +8,8 @@ import (
 	"github.com/miekg/dns"
 )
 
-func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...string) ([]*Record, error) {
-	db := handler.db
+func (handler *AiDNS) findRecordDB(zone string, name string, types ...string) ([]*Record, error) {
+
 	var query string
 	if name != zone {
 		query = strings.TrimSuffix(name, "."+zone)
@@ -17,7 +17,7 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 	sqlQuery := fmt.Sprintf("SELECT name, zone, ttl, record_type, content FROM %s WHERE zone = ? AND name = ? AND record_type IN ('%s')",
 		handler.tableName,
 		strings.Join(types, "','"))
-	result, err := db.Query(sqlQuery, zone, query)
+	result, err := handler.db.Query(sqlQuery, zone, query)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,6 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 		if err != nil {
 			return nil, err
 		}
-
 		records = append(records, &Record{
 			Name:       recordName,
 			Zone:       recordZone,
@@ -52,10 +51,38 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 	return records, nil
 }
 
+func (handler *AiDNS) findRecord(zone string, name string, types ...string) ([]*Record, error) {
+	records := make([]*Record, 0)
+	if handler.RedisURL == "" {
+		return handler.findRecordDB(zone, name, types...)
+	}
+	key := zone + ":" + name + ":" + strings.Join(types, "")
+	err := handler.locker.Get(key, &records, func() (any, error) {
+		tmpRecords, err := handler.findRecordDB(zone, name, types...)
+		if err != nil {
+			return nil, err
+		}
+		return tmpRecords, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	for i, _ := range records {
+		records[i].handler = handler
+	}
+
+	// If no records found, check for wildcard records.
+	if len(records) == 0 && name != zone {
+		return handler.findWildcardRecords(zone, name, types...)
+	}
+
+	return records, nil
+}
+
 // findWildcardRecords attempts to find wildcard records
 // recursively until it finds matching records.
 // e.g. x.y.z -> *.y.z -> *.z -> *
-func (handler *CoreDNSMySql) findWildcardRecords(zone string, name string, types ...string) ([]*Record, error) {
+func (handler *AiDNS) findWildcardRecords(zone string, name string, types ...string) ([]*Record, error) {
 	const (
 		wildcard       = "*"
 		wildcardPrefix = wildcard + "."
@@ -76,10 +103,8 @@ func (handler *CoreDNSMySql) findWildcardRecords(zone string, name string, types
 	return handler.findRecord(zone, target, types...)
 }
 
-func (handler *CoreDNSMySql) loadZones() error {
-	db := handler.db
-
-	result, err := db.Query("SELECT DISTINCT zone FROM " + handler.tableName)
+func (handler *AiDNS) loadZones() error {
+	result, err := handler.db.Query("SELECT DISTINCT zone FROM " + handler.tableName)
 	if err != nil {
 		return err
 	}
@@ -101,7 +126,7 @@ func (handler *CoreDNSMySql) loadZones() error {
 	return nil
 }
 
-func (handler *CoreDNSMySql) hosts(zone string, name string) ([]dns.RR, error) {
+func (handler *AiDNS) hosts(zone string, name string) ([]dns.RR, error) {
 	recs, err := handler.findRecord(zone, name, "A", "AAAA", "CNAME")
 	if err != nil {
 		return nil, err

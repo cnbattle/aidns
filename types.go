@@ -15,7 +15,7 @@ type Record struct {
 	Ttl        uint32 `json:"ttl"`
 	Content    string `json:"content"`
 
-	handler *CoreDNSMySql
+	handler *AiDNS
 }
 
 type RecordApi struct {

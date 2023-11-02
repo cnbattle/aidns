@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (handler *CoreDNSMySql) Server() (err error) {
+func (handler *AiDNS) Server() (err error) {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 
@@ -75,7 +75,7 @@ func (handler *CoreDNSMySql) Server() (err error) {
 	return nil
 }
 
-func (handler *CoreDNSMySql) findRecordsForZone(ctx *gin.Context) (any, error) {
+func (handler *AiDNS) findRecordsForZone(ctx *gin.Context) (any, error) {
 	zone := ctx.Query("zone")
 	sqlQuery := fmt.Sprintf("SELECT id, name, zone, ttl, record_type, content FROM %s WHERE zone = ?",
 		handler.tableName)
@@ -108,7 +108,7 @@ func (handler *CoreDNSMySql) findRecordsForZone(ctx *gin.Context) (any, error) {
 	return records, nil
 }
 
-func (handler *CoreDNSMySql) updateRecordsForZone(ctx *gin.Context) error {
+func (handler *AiDNS) updateRecordsForZone(ctx *gin.Context) error {
 	var params RecordApi
 	err := ctx.ShouldBindJSON(&params)
 	if err != nil {
@@ -134,7 +134,7 @@ func (handler *CoreDNSMySql) updateRecordsForZone(ctx *gin.Context) error {
 	return nil
 }
 
-func (handler *CoreDNSMySql) deleteRecordsForZone(ctx *gin.Context) error {
+func (handler *AiDNS) deleteRecordsForZone(ctx *gin.Context) error {
 	var params RecordDelete
 	err := ctx.ShouldBindJSON(&params)
 	if err != nil {

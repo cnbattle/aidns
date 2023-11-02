@@ -14,7 +14,7 @@ A lightweight DNS server that provides HTTP management interface, based on [Core
 
 ## TODO
 
-- [ ] Add `read-through` cache processing solution
+- [x] Add `read-through` cache processing solution
 - [ ] Add web management page
 
 ## AIDNS config
@@ -31,10 +31,12 @@ aidns {
     [zone_update_interval ZONE_UPDATE_INTERVAL]
     [http_token HTTP_TOKEN]
     [http_addr HTTP_ADDR]
+    [redis_url REDIS_URL]
 }
 ```
 
-- `dsn` DSN for MySQL as per https://github.com/go-sql-driver/mysql examples. You can use `$ENV_NAME` format in the DSN,
+- `dsn` DSN for MySQL as per https://github.com/go-sql-driver/mysql#dsn-data-source-name examples. You can
+  use `$ENV_NAME` format in the DSN,
   and it will be replaced with the environment variable value.
 - `table_prefix` Prefix for the MySQL tables. Defaults to `aidns_`.
 - `max_lifetime` Duration (in Golang format) for a SQL connection. Default is 1 minute.
@@ -44,6 +46,9 @@ aidns {
 - `zone_update_interval` Maximum time interval between loading all the zones from the database. Default is 10 minutes.
 - `http_token` Http Api Server authorization token. Default is empty, is no authorization.
 - `http_addr` Http Api Server Addr. Default is :8888.
+- `redis_url` URL for Redis as per https://github.com/redis/go-redis#connecting-via-a-redis-url examples. Default is
+  empty, not cache.
+- `redis_ttl` Redis cache time. Default is 10 minutes.
 
 #### CoreDNS full config example
 
@@ -58,6 +63,8 @@ aidns {
         dsn root:123456@(localhost:3306)/dev?charset=utf8mb4&parseTime=True&loc=Local
         http_token aidns
         http_addr :8888
+        redis_url redis://:123456@localhost:30603/0?dial_timeout=3&read_timeout=6s&max_retries=2
+        redis_ttl 10m
     }
     loop
     reload
@@ -67,7 +74,8 @@ aidns {
 
 ## Supported Record Types
 
-`A`, `AAAA`, `CNAME`, `SOA`, `TXT`, `NS`, `MX`, `CAA` and `SRV`. Wildcard records are supported as well. This backend doesn't support `AXFR` requests.
+`A`, `AAAA`, `CNAME`, `SOA`, `TXT`, `NS`, `MX`, `CAA` and `SRV`. Wildcard records are supported as well. This backend
+doesn't support `AXFR` requests.
 
 ## Build
 

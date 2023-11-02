@@ -3,11 +3,13 @@ module github.com/cnbattle/aidns
 go 1.21.3
 
 require (
+	github.com/bsm/redislock v0.9.4
 	github.com/coredns/caddy v1.1.1
 	github.com/coredns/coredns v1.11.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/miekg/dns v1.1.56
+	github.com/redis/go-redis/v9 v9.3.0
 	golang.org/x/net v0.17.0
 )
 
@@ -17,6 +19,7 @@ require (
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

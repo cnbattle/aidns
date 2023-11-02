@@ -12,7 +12,7 @@ import (
 	"github.com/coredns/coredns/request"
 )
 
-type CoreDNSMySql struct {
+type AiDNS struct {
 	Next               plugin.Handler
 	Dsn                string
 	TablePrefix        string
@@ -22,16 +22,19 @@ type CoreDNSMySql struct {
 	Ttl                uint32
 	HttpToken          string
 	HttpAddr           string
+	RedisURL           string
+	RedisTTL           time.Duration
 
 	tableName      string
 	lastZoneUpdate time.Time
 	zoneUpdateTime time.Duration
 	zones          []string
 	db             *sql.DB
+	locker         *Locker
 }
 
 // ServeDNS implements the plugin.Handler interface.
-func (handler *CoreDNSMySql) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
+func (handler *AiDNS) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
 
 	qName := state.Name()
@@ -133,9 +136,9 @@ func (handler *CoreDNSMySql) ServeDNS(ctx context.Context, w dns.ResponseWriter,
 }
 
 // Name implements the Handler interface.
-func (handler *CoreDNSMySql) Name() string { return "handler" }
+func (handler *AiDNS) Name() string { return "handler" }
 
-func (handler *CoreDNSMySql) errorResponse(state request.Request, rCode int, err error) (int, error) {
+func (handler *AiDNS) errorResponse(state request.Request, rCode int, err error) (int, error) {
 	m := new(dns.Msg)
 	m.SetRcode(state.Req, rCode)
 	m.Authoritative, m.RecursionAvailable, m.Compress = true, false, true

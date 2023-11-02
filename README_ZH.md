@@ -14,7 +14,7 @@
 
 ## TODO
 
-- [ ] 增加 `read-through` 缓存处理方案
+- [x] 增加 `read-through` 缓存处理方案
 - [ ] 增加 web 管理页面
 
 ## AIDNS配置
@@ -31,10 +31,12 @@ aidns {
     [zone_update_interval ZONE_UPDATE_INTERVAL]
     [http_token HTTP_TOKEN]
     [http_addr HTTP_ADDR]
+    [redis_url REDIS_URL]
 }
 ```
 
-- `dsn` MySQL 的 DSN，按照 https://github.com/go-sql-driver/mysql 示例。 您可以在 DSN 中使用 `$ENV_NAME` 格式，并将其替换为环境变量值。
+- `dsn` MySQL 的 DSN，按照 https://github.com/go-sql-driver/mysql#dsn-data-source-name 示例。 您可以在 DSN
+  中使用 `$ENV_NAME` 格式，并将其替换为环境变量值。
 - `table_prefix` MySQL 表的前缀。 默认为 `aidns_`。
 - `max_lifetime` SQL 连接的持续时间（Golang 格式）。 默认值为 1 分钟。
 - `max_open_connections` 数据库服务器的最大打开连接数。默认值为 10。
@@ -43,6 +45,8 @@ aidns {
 - `zone_update_interval` 从数据库加载所有区域之间的最大时间间隔。 默认值为 10 分钟。
 - `http_token` Http API 服务器授权Token。 默认为空，不需要授权。
 - `http_addr` Http API 服务器地址。 默认值为 :8888。
+- `redis_url` Redis 的 URL，按照 https://github.com/redis/go-redis#connecting-via-a-redis-url 示例。默认为空，不缓存。
+- `redis_ttl` Redis 缓存时间，默认值为 10 分钟。
 
 #### 完整 CoreDNS 配置示例
 
@@ -55,7 +59,10 @@ aidns {
     ready
     aidns {
         dsn root:123456@(localhost:3306)/dev?charset=utf8mb4&parseTime=True&loc=Local
+        http_token aidns
         http_addr :8888
+        redis_url redis://:123456@localhost:30603/0?dial_timeout=3&read_timeout=6s&max_retries=2
+        redis_ttl 10m
     }
     loop
     reload
