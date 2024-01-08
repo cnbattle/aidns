@@ -9,7 +9,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/miekg/dns v1.1.56
-	github.com/redis/go-redis/v9 v9.3.1
+	github.com/redis/go-redis/v9 v9.4.0
 	golang.org/x/net v0.17.0
 )
 
