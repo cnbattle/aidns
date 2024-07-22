@@ -7,13 +7,14 @@ require (
 	github.com/coredns/caddy v1.1.1
 	github.com/coredns/coredns v1.11.2
 	github.com/gin-gonic/gin v1.10.0
-	github.com/go-sql-driver/mysql v1.7.1
+	github.com/go-sql-driver/mysql v1.8.1
 	github.com/miekg/dns v1.1.61
 	github.com/redis/go-redis/v9 v9.6.0
 	golang.org/x/net v0.27.0
 )
 
 require (
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
