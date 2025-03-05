@@ -78,6 +78,7 @@ func mysqlParse(c *caddy.Controller) (*AiDNS, error) {
 	c.OnShutdown(func() error { return aiDNS.db.Close() })
 
 	c.Next()
+
 	if c.NextBlock() {
 		for {
 			switch c.Val() {
@@ -176,7 +177,6 @@ func mysqlParse(c *caddy.Controller) (*AiDNS, error) {
 				break
 			}
 		}
-
 	}
 
 	aiDNS.tableName = aiDNS.TablePrefix + "records"

@@ -7,74 +7,71 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Server http 服务
 func (handler *AiDNS) Server() (err error) {
-	gin.SetMode(gin.ReleaseMode)
-	r := gin.New()
-
-	if handler.HttpToken != "" {
-		r.Use(func(ctx *gin.Context) {
-			if ctx.GetHeader("Authorization") != "Bearer "+handler.HttpToken {
+	go func() {
+		gin.SetMode(gin.ReleaseMode)
+		r := gin.New()
+		if handler.HttpToken != "" {
+			r.Use(func(ctx *gin.Context) {
+				if ctx.GetHeader("Authorization") != "Bearer "+handler.HttpToken {
+					ctx.JSON(http.StatusOK, gin.H{
+						"code": 1,
+						"msg":  "authorization error",
+					})
+					ctx.Abort()
+				}
+			})
+		}
+		// 列表 添加 更新 删除 records
+		r.GET("records", func(ctx *gin.Context) {
+			resp, err := handler.findRecordsForZone(ctx)
+			if err != nil {
 				ctx.JSON(http.StatusOK, gin.H{
 					"code": 1,
-					"msg":  "authorization error",
+					"msg":  err.Error(),
 				})
-				ctx.Abort()
+				return
 			}
-		})
-	}
-
-	// 列表 添加 更新 删除 records
-	r.GET("records", func(ctx *gin.Context) {
-		resp, err := handler.findRecordsForZone(ctx)
-		if err != nil {
 			ctx.JSON(http.StatusOK, gin.H{
-				"code": 1,
-				"msg":  err.Error(),
+				"code":    0,
+				"records": resp,
 			})
-			return
-		}
-		ctx.JSON(http.StatusOK, gin.H{
-			"code":    0,
-			"records": resp,
 		})
-	})
-	r.POST("records", func(ctx *gin.Context) {
-		err := handler.updateRecordsForZone(ctx)
-		if err != nil {
+		r.POST("records", func(ctx *gin.Context) {
+			err := handler.updateRecordsForZone(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusOK, gin.H{
+					"code": 1,
+					"msg":  err.Error(),
+				})
+				return
+			}
 			ctx.JSON(http.StatusOK, gin.H{
-				"code": 1,
-				"msg":  err.Error(),
+				"code": 0,
 			})
-			return
-		}
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 0,
 		})
-	})
-
-	r.DELETE("records", func(ctx *gin.Context) {
-		err := handler.deleteRecordsForZone(ctx)
-		if err != nil {
+		r.DELETE("records", func(ctx *gin.Context) {
+			err := handler.deleteRecordsForZone(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusOK, gin.H{
+					"code": 1,
+					"msg":  err.Error(),
+				})
+				return
+			}
 			ctx.JSON(http.StatusOK, gin.H{
-				"code": 1,
-				"msg":  err.Error(),
+				"code": 0,
 			})
-			return
-		}
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 0,
 		})
-	})
-	log.Info("Http Server run in port:", handler.HttpAddr)
-
-	go func() {
+		log.Info("Http Server run in port:", handler.HttpAddr)
 		err = r.Run(handler.HttpAddr)
 		log.Error("Http Server Error", err)
 	}()
-
 	return nil
 }
 
+// findRecordsForZone 查询 记录
 func (handler *AiDNS) findRecordsForZone(ctx *gin.Context) (any, error) {
 	zone := ctx.Query("zone")
 	sqlQuery := fmt.Sprintf("SELECT id, name, zone, ttl, record_type, content FROM %s WHERE zone = ?",
@@ -108,6 +105,7 @@ func (handler *AiDNS) findRecordsForZone(ctx *gin.Context) (any, error) {
 	return records, nil
 }
 
+// updateRecordsForZone 添加/更新 记录
 func (handler *AiDNS) updateRecordsForZone(ctx *gin.Context) error {
 	var params RecordApi
 	err := ctx.ShouldBindJSON(&params)
@@ -134,6 +132,7 @@ func (handler *AiDNS) updateRecordsForZone(ctx *gin.Context) error {
 	return nil
 }
 
+// deleteRecordsForZone 删除 记录
 func (handler *AiDNS) deleteRecordsForZone(ctx *gin.Context) error {
 	var params RecordDelete
 	err := ctx.ShouldBindJSON(&params)
