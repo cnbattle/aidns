@@ -61,7 +61,7 @@ aidns {
         dsn root:123456@(localhost:3306)/dev?charset=utf8mb4&parseTime=True&loc=Local
         http_token aidns
         http_addr :8888
-        redis_url redis://:123456@localhost:30603/0?dial_timeout=3&read_timeout=6s&max_retries=2
+        redis_url redis://:123456@localhost:6379/0?dial_timeout=3&read_timeout=6s&max_retries=2
         redis_ttl 10m
     }
     loop
