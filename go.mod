@@ -1,7 +1,7 @@
 module github.com/cnbattle/aidns
 
 go 1.21.3
-toolchain go1.22.9
+toolchain go1.23.7
 
 require (
 	github.com/bsm/redislock v0.9.4
@@ -11,7 +11,7 @@ require (
 	github.com/go-sql-driver/mysql v1.9.0
 	github.com/miekg/dns v1.1.63
 	github.com/redis/go-redis/v9 v9.7.1
-	golang.org/x/net v0.35.0
+	golang.org/x/net v0.36.0
 )
 
 require (
@@ -56,7 +56,7 @@ require (
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.uber.org/mock v0.4.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
-	golang.org/x/crypto v0.33.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
 	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
 	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect
