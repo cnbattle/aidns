@@ -1,7 +1,6 @@
 module github.com/cnbattle/aidns
 
-go 1.21.3
-toolchain go1.23.7
+go 1.24.0
 
 require (
 	github.com/bsm/redislock v0.9.4
@@ -45,13 +44,11 @@ require (
 	github.com/onsi/ginkgo/v2 v2.19.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.20.5 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.60.1 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/quic-go/quic-go v0.48.1 // indirect
-	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.uber.org/mock v0.4.0 // indirect

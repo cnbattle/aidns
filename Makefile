@@ -3,7 +3,7 @@ EXECUTABLE := aidns
 
 ROOT := $(shell pwd)
 DIST := $(ROOT)/release
-coredns_origin := $(DIST)/coredns
+coredns_origin := $(DIST)/coredns_origin
 coredns_build := $(DIST)/coredns_build
 binaries_path := $(DIST)/binaries
 release_path := $(DIST)/release
@@ -20,7 +20,7 @@ endif
 ifneq ($(wildcard $(coredns_origin)),)
     $(info 已下载 CoreDNS 源代码)
 else
-    $(shell git clone --depth 1 https://github.com/coredns/coredns.git $(coredns_origin))
+    $(shell git clone --depth 1 git@github.com:coredns/coredns.git $(coredns_origin))
 endif
 
 build: build-aidns release-upx release-check-upx
