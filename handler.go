@@ -36,27 +36,24 @@ type AiDNS struct {
 // ServeDNS implements the plugin.Handler interface.
 func (handler *AiDNS) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
-
 	qName := state.Name()
 	qType := state.Type()
-
 	if time.Since(handler.lastZoneUpdate) > handler.zoneUpdateTime {
 		err := handler.loadZones()
 		if err != nil {
 			return handler.errorResponse(state, dns.RcodeServerFailure, err)
 		}
 	}
-
+	// 检查是否属于当前 Zone（如 example.com. 的查询才处理）
 	qZone := plugin.Zones(handler.zones).Matches(qName)
 	if qZone == "" {
 		return plugin.NextOrFailure(handler.Name(), handler.Next, ctx, w, r)
 	}
-
+	// 查询数据库
 	records, err := handler.findRecord(qZone, qName, qType)
 	if err != nil {
 		return handler.errorResponse(state, dns.RcodeServerFailure, err)
 	}
-
 	var appendSOA bool
 	if len(records) == 0 {
 		appendSOA = true
@@ -67,7 +64,6 @@ func (handler *AiDNS) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns
 		}
 		records = append(records, recs...)
 	}
-
 	if qType == "SOA" {
 		recsNs, err := handler.findRecord(qZone, qName, "NS")
 		if err != nil {
@@ -75,14 +71,12 @@ func (handler *AiDNS) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns
 		}
 		records = append(records, recsNs...)
 	}
-
 	if qType == "AXFR" {
 		return handler.errorResponse(state, dns.RcodeNotImplemented, nil)
 	}
-
-	answers := make([]dns.RR, 0, 10)
-	extras := make([]dns.RR, 0, 10)
-
+	// 1. 提取查询名称和类型（如 "www.example.com." -> "www", "A"）
+	answers := make([]dns.RR, 0, 10) // www
+	extras := make([]dns.RR, 0, 10)  // A
 	for _, record := range records {
 		var answer dns.RR
 		switch record.RecordType {
@@ -115,7 +109,11 @@ func (handler *AiDNS) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns
 			answers = append(answers, answer)
 		}
 	}
-
+	if len(answers) == 0 {
+		// 无记录则转发到上游 DNS
+		return plugin.NextOrFailure(handler.Name(), handler.Next, ctx, w, r)
+	}
+	//  构建 DNS 响应
 	m := new(dns.Msg)
 	m.SetReply(r)
 	m.Authoritative = true

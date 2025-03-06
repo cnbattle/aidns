@@ -60,7 +60,7 @@ func (s Locker) Get(key string, v any, getFunc func() (any, error)) error {
 			return errors.New("wait try")
 		case err != nil:
 			return errors.New("has lock")
-		case err == nil:
+		default:
 			// 不要忘记推迟发布。
 			defer lock.Release(s.ctx)
 			// 查询数据
