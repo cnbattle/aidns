@@ -6,7 +6,7 @@ require (
 	github.com/coredns/caddy v1.1.2-0.20241029205200-8de985351a98
 	github.com/coredns/coredns v1.12.0
 	github.com/gin-gonic/gin v1.10.0
-	github.com/go-sql-driver/mysql v1.9.0
+	github.com/go-sql-driver/mysql v1.9.1
 	github.com/miekg/dns v1.1.64
 	github.com/redis/go-redis/v9 v9.7.1
 	golang.org/x/net v0.38.0
