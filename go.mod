@@ -8,7 +8,7 @@ require (
 	github.com/coredns/coredns v1.12.3
 	github.com/gin-gonic/gin v1.10.1
 	github.com/go-sql-driver/mysql v1.9.3
-	github.com/miekg/dns v1.1.67
+	github.com/miekg/dns v1.1.68
 	github.com/redis/go-redis/v9 v9.11.0
 	golang.org/x/net v0.42.0
 )
