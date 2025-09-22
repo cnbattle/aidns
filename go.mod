@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/bsm/redislock v0.9.4
-	github.com/coredns/caddy v1.1.2-0.20241029205200-8de985351a98
+	github.com/coredns/caddy v1.1.3
 	github.com/coredns/coredns v1.12.3
 	github.com/gin-gonic/gin v1.10.1
 	github.com/go-sql-driver/mysql v1.9.3
